@@ -1,3 +1,6 @@
-plot(x=1:10, y=rep(10,10), pch=19, cex=3, col="green")
+library("igraph")
 print("ok")
 
+
+net <- graph_from_data_frame(d=links, vertices=nodes, directed=T) 
+net
