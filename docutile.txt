@@ -1,3 +1,4 @@
 Sources utiles:
 
 1. http://kateto.net/network-visualization?fbclid=IwAR24w1mbLTo5COmSWTkFxJHR-crLRxm2Ok1FRJjOb0l9Ua_cDZVmKzcu4g0
+2. http://kateto.net/networks-r-igraph
