@@ -22,7 +22,7 @@ hv.opts.defaults(
 #Les indices des noeuds 
 source = []
 node_indices = []
-strat_list = []
+start_list = []
 '''je créé un graphe ) partir du fichier sur Trump. C'est une liste de tuple avec (node1,node2,weight-edge)'''
 with open('trump-net.txt','r') as f:
     for line in f:

@@ -50,7 +50,7 @@ for edg in got_net.edges:
         edg["hidden"] = True
         
     
-got_net.set_edge_smooth('curvedCW')
+#got_net.set_edge_smooth('curvedCW')
 neighbor_map = got_net.get_adj_list()
 
 
