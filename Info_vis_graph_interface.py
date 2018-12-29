@@ -22,6 +22,7 @@ hv.opts.defaults(
 #Les indices des noeuds 
 source = []
 node_indices = []
+strat_list = []
 '''je créé un graphe ) partir du fichier sur Trump. C'est une liste de tuple avec (node1,node2,weight-edge)'''
 with open('trump-net.txt','r') as f:
     for line in f:
@@ -38,7 +39,7 @@ index_number = [int(x) for x in index_number]
 # Alors je comprend pas pk mais si je dépasse 80 nodes 
 #il veut plus les afficher et il afficher que les edges :/
 
-index_number = index_number[0:89]
+index_number = index_number[0:79]
 N = len(index_number)
       
 plot = figure(title='Graph Layout Demonstration', x_range=(-10.1,10.1), y_range=(-10.1,10.1),
@@ -49,10 +50,10 @@ graph = GraphRenderer() #On créé le graph (et son rendu)
 graph.node_renderer.data_source.add(index_number, 'index')
 graph.node_renderer.data_source.add(Spectral8, 'color')#On modifie la couleur des noeuds
 #graph.node_renderer.glyph = Oval(height=0.1, width=0.1, fill_color='color')
-graph.node_renderer.glyph = Circle(size=15, fill_color=Spectral4[0])
+graph.node_renderer.glyph = Circle(size=50, fill_color=Spectral4[0])
 
 graph.edge_renderer.data_source.data = dict(
-    start=[0]*N,
+    start=start_list,
     end=index_number)
 
 ### start of layout code
@@ -76,11 +77,7 @@ graph.inspection_policy = EdgesAndLinkedNodes()
 
 
 # Rendering Exportation
+plot.renderers.append(graph)
 
-
-renderer = hv.renderer('bokeh')
-
-
-# OR
-output_file("graph.html")
-show(tg)
+output_file('graph.html')
+show(plot)

@@ -27,7 +27,7 @@ with open('trump-net.txt','r') as f:
         line = line.strip()
         names = line.split(";")
        # names[2] = float(names[2])
-        source.append((names[0],names[1],rand.randint(0,1)))
+        source.append((names[0],names[1],1))
         for nm in names[0:1]:
             if nm not in labels:
                labels.append(nm)
