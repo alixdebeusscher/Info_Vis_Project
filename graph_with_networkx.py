@@ -3,6 +3,21 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+def my_circular_layout(Graph):
+        Nodes = Graph.nodes
+        N = len(Nodes)
+        N_list = np.arange(0,N)
+        circ = [i*2*math.pi/N for i in N_list]
+        x = [math.cos(j) for j in circ]
+        y = [math.sin(j) for j in circ]
+        my_circ_layout = {}
+        k = 0
+        for nd in Nodes:
+                my_circ_layout[nd] = [x[k],y[k]]
+                k+=1
+                
+        return my_circ_layout
+
 def my_graph_generator(file):
     G = nx.Graph()
     source = []
@@ -26,26 +41,9 @@ def my_graph_generator(file):
     
     
 
-    plt.savefig("my_graph.png")
+    plt.savefig("my_graph.png")     
 
+    #nx.draw(G,pos = my_circular_layout(G),with_labels=True,nodecolor = 'b',edge_color = 'r',node_size=size_array,node_shape='o')
+    return [G,my_circular_layout(G)]
 
-    def my_circular_layout(Graph):
-        Nodes = G.nodes
-        N = len(Nodes)
-        N_list = np.arange(0,N)
-        circ = [i*2*math.pi/N for i in N_list]
-        x = [math.cos(j) for j in circ]
-        y = [math.sin(j) for j in circ]
-        my_circ_layout = {}
-        k = 0
-        for nd in Nodes:
-                my_circ_layout[nd] = [x[k],y[k]]
-                k+=1
-                
-        return my_circ_layout
-        
-
-    
-
-    nx.draw(G,pos = my_circular_layout(G),with_labels=True,nodecolor = 'b',edge_color = 'r',node_size=size_array,node_shape='o')
-    return [G,my_circular_layout]
+graph = my_graph_generator('my_data_set.txt')
