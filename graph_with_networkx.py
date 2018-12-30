@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import plotly as ply
 import plotly.plotly as py
 import plotly.graph_objs as go
+import json 
 
 def my_graph_generator(file):
     G = nx.Graph()
@@ -112,6 +113,14 @@ def my_graph_generator(file):
     
     ply.tools.set_credentials_file(username='delhayead', api_key='Twixfb2Wjh6VdXxB2dvT')
     py.iplot(fig, filename='my_networkx')
+
+    from networkx.readwrite import json_graph
+
+    for n in G:
+        G.node[n]['name'] = n
+
+    d = json_graph.node_link_data(G)
+    json.dump(d, open('force/force.json','w'))
     return [G,my_circular_layout]
     
     
