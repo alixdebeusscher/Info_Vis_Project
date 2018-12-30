@@ -10,6 +10,7 @@ import plotly.graph_objs as go
 from plotly.tools import FigureFactory as FF
 import networkx as nx
 from plotly.offline import download_plotlyjs, init_notebook_mode,  iplot, plot
+from .fa2l import force_atlas2_layout
 
 def make_annotations(labels, Xn, Yn, font_size=14, font_color='rgb(10,10,10)'):
     L=len(Xn)

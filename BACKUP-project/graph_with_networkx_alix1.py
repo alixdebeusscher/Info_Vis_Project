@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import plotly as ply
 import plotly.plotly as py
 import plotly.graph_objs as go
+from fa2l import force_atlas2_layout
 
 def my_circular_layout(Graph):
         Nodes = Graph.nodes
@@ -47,7 +48,7 @@ def my_graph_generator(file, value):
     if value =='circ':
         pos = my_circular_layout(G)
     if value =='oth':
-        pos = nx.fruchterman_reingold_layout(G)
+        pos = force_atlas2_layout.force_atlas2_layout(G)#nx.fruchterman_reingold_layout(G)
     #nx.draw(G,pos = my_circular_layout(G),with_labels=True,nodecolor = 'b',edge_color = 'r',node_size=size_array,node_shape='o')
     return [G,pos,size_array]
 
