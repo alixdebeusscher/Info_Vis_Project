@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import plotly as ply
 import plotly.plotly as py
 import plotly.graph_objs as go
-from fa2l import force_atlas2_layout
 
 def my_circular_layout(Graph):
         Nodes = Graph.nodes
@@ -22,6 +21,35 @@ def my_circular_layout(Graph):
                 
         return my_circ_layout
 
+
+def my_level_layout(Graph):
+    Nodes = Graph.nodes
+    degree_list = []
+    label_dict = {}
+    my_lvl_layout = {}
+    for nd in Nodes:
+        degree_node = len(Graph[nd])
+        if degree_node in degree_list:
+            label_dict[degree_node].append(nd)
+        else:
+            degree_list.append(degree_node)
+            label_dict[degree_node] = [nd] 
+                           
+    degree_list = sorted(degree_list)
+    for key in label_dict:
+        L = len(label_dict[key])
+        x_vectors_key = np.linspace(0,L-1,L)
+        x_vectors_key[:] = [a - L/2 for a in x_vectors_key]
+        y_vectors_key = degree_list.index(key)
+        k = 0
+        for label in label_dict[key]:
+            my_lvl_layout[label] = [x_vectors_key[k],y_vectors_key]
+            k+=1
+        
+    return my_lvl_layout
+        
+        
+        
 def my_graph_generator(file, value):
     G = nx.Graph()
     source = []
@@ -47,8 +75,10 @@ def my_graph_generator(file, value):
     pos =  []
     if value =='circ':
         pos = my_circular_layout(G)
+    if value =='lvl':
+        pos = my_level_layout(G)
     if value =='oth':
-        pos = force_atlas2_layout.force_atlas2_layout(G)#nx.fruchterman_reingold_layout(G)
+        pos = nx.fruchterman_reingold_layout(G)
     #nx.draw(G,pos = my_circular_layout(G),with_labels=True,nodecolor = 'b',edge_color = 'r',node_size=size_array,node_shape='o')
     return [G,pos,size_array]
 

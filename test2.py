@@ -1,27 +1,10 @@
-import platform
-import plotly
-import plotly.offline as offline
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import graph_with_networkx_alix as gw
 from dash.dependencies import Input, Output
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of 0702049... new interface
-import plotly.graph_objs as go
-from plotly.tools import FigureFactory as FF
-import networkx as nx
-from plotly.offline import download_plotlyjs, init_notebook_mode,  iplot, plot
-<<<<<<< HEAD
-from .fa2l import force_atlas2_layout
-=======
->>>>>>> 0702049daa752a84f1841a0dbe6d76075c45d180
-=======
->>>>>>> parent of 0702049... new interface
 
-def make_annotations(labels, Xn, Yn, font_size=14, font_color='rgb(10,10,10)'):
+def make_annotations(labels, Xn, Yn, font_size, font_color='rgb(10,10,10)'):
     L=len(Xn)
     if len(labels)!=L:
         raise ValueError('The lists pos and text must have the same len')
@@ -36,7 +19,7 @@ def make_annotations(labels, Xn, Yn, font_size=14, font_color='rgb(10,10,10)'):
                           )
     return annotations
 
-def get_data(lab, value):
+def get_data(lab, l_s, node, ada, node_col, line_size, value):
     tab=gw.get_graph(value)
     G=tab[0]
     pos=tab[1]
@@ -49,27 +32,39 @@ def get_data(lab, value):
         y = (pos.get(key))[1]
         Xn.append(x)
         Yn.append(y)
-    
+    if ada==0:
+        size_array=[25 for i in size_array]
+    colop = ['rgb(0,0,0)' for i in G.edges()]
+    colop[3] = 'rgb(240,50,60)'
     trace_nodes=dict(type='scatter',
                      x=Xn, 
                      y=Yn,
                      mode='markers',
-                     marker=dict(size=size_array, color='rgb(0,240,0)'),
+                     marker=dict(size=[i * node for i in size_array], color=colop),
                      text=labels,
                      hoverinfo='text')
     
     Xe=[]
     Ye=[]
+    #pr = nx.shortest_path(G, 'THIBAULT', 'LAURENT')
+#    tabShort = [('ADRIEN', 'THIBAULT'), ('ADRIEN', 'LAURENT')]
+#    colo_l = ['black' for i in G.edges()]
+#    i=0
     for e in G.edges():
+#        if e in tabShort:
+#            colo_l[i] = 'red'
         Xe.extend([pos[e[0]][0], pos[e[1]][0], None])
         Ye.extend([pos[e[0]][1], pos[e[1]][1], None])
+        #i+=1
+    print(Xe)
+    print(Ye)
+    #colo = 'rgb(25,25,25)'
     
-        
     trace_edges=dict(type='scatter',
                      mode='lines',
                      x=Xe,
                      y=Ye,
-                     line=dict(width=1, color='rgb(25,25,25)'),
+                     line=dict(width=line_size, color='rgb(0,0,0)'),
                      hoverinfo='none' 
                     )
     
@@ -80,8 +75,8 @@ def get_data(lab, value):
               title='' 
               )
     layout=dict(
-            width=600,
-            height=600,
+            width=850,
+            height=850,
             autosize=False,
             showlegend=False,
             xaxis=axis,
@@ -96,10 +91,10 @@ def get_data(lab, value):
     ),
     hovermode='closest',
     #annotations=make_annotations(),
-    plot_bgcolor='#efecea', #set background color            
+    #plot_bgcolor='#efecea', #set background color            
     )
     if lab==1:
-        layout.update(annotations=make_annotations(labels, Xn, Yn))
+        layout.update(annotations=make_annotations(labels, Xn, Yn, l_s))
     return [trace_edges, trace_nodes],layout
     
 
@@ -108,46 +103,89 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-#allo=get_data(lab=1)          
-#data=allo[0]
-#layout=allo[1]
 app.layout = html.Div(children=[
     html.H4(children='Hello Dash', style={
                     'textAlign': 'center'
                 }),
         
-            dcc.Checklist(
+            html.Div([
+                dcc.Checklist(
                 id='list',
-                options=[{'label': 'Labels', 'value': 'lab'}],
+                options=[{'label': 'Show labels', 'value': 'lab'}],
                 values=['lab']
+            ),html.Div('Select labels size'),
+            dcc.Slider(
+                id='l_size',
+                min=1,
+                max=50,
+                step=0.2,
+                value=14,
             ),
             dcc.Dropdown(id='algo', options=[
                     {'label': 'Circular', 'value': 'circ'},
-                    {'label': 'Other', 'value': 'oth'}
+                    {'label': 'Other', 'value': 'oth'},
+                    {'label': 'Level','value': 'lvl'}
                     ],
                     value='circ'
             
-            ),
-            dcc.Graph(
-                id='graphic',
+            ), html.Div('Select node size'),
+            dcc.Slider(
+                id='node_size',
+                min=0,
+                max=5,
+                step=0.1,
+                value=1,
+            ),dcc.Checklist(
+                id='ada_node',
+                options=[{'label': 'Adapt node size', 'value': 'ada'}],
+                values=['ada']
+            ),html.Div('Choose node color'),dcc.RadioItems(
+                id = 'nod_col',
+                options=[
+                    {'label': 'Black', 'value': 'Black'},
+                    {'label': 'Red', 'value': 'Red'},
+                    {'label': 'Green', 'value': 'Green'}
+                ],
+                value='Green'
+            ),html.Div('Select edge size'),
+            dcc.Slider(
+                id='edge_size',
+                min=0,
+                max=5,
+                step=0.1,
+                value=1,
+            )], style={'width': '30%', 'display': 'inline-block'}),
+            html.Div([
+                    dcc.Graph(
+                id='graphic'
+                #animate=True
 #                figure={
 #                    'data': data,
 #                    'layout': layout
 #                }, 
-                style={'display': 'inline-block'}
-            )
+            )],style={ 'display': 'inline-block', 'float':'right'})
     ])
     
 @app.callback(
     Output(component_id='graphic', component_property='figure'),
     [Input(component_id='list', component_property='values'),
-     Input(component_id='algo', component_property='value')]
+     Input(component_id='l_size', component_property='value'),
+     Input(component_id='algo', component_property='value'),
+     Input(component_id='node_size', component_property='value'),
+     Input(component_id='ada_node', component_property='values'),
+     Input(component_id='nod_col', component_property='value'),
+     Input(component_id='edge_size', component_property='value')]
 )
-def update_graph(list_l, algo_l):
+def update_graph(list_l, l_s, algo, node, a_node, node_col, edge):
     if 'lab' in list_l:
-        allo=get_data(1, algo_l)  
+        lab = 1
     else:
-        allo=get_data(0, algo_l)       
+        lab=0
+    if 'ada' in a_node:
+        ada = 1
+    else:
+        ada=0
+    allo=get_data(lab, l_s, node, ada, node_col, edge, algo)       
     data=allo[0]
     layout=allo[1]
     return  { 'data': data,'layout': layout}
