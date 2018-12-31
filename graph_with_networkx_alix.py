@@ -6,7 +6,8 @@ import plotly as ply
 import plotly.plotly as py
 import plotly.graph_objs as go
 
-def my_circular_layout(Graph):
+def my_circular_layout(Graph,ordered,size_array):
+        Sort = sorted(Graph.degree, key=lambda x: x[1], reverse=True)
         Nodes = Graph.nodes
         N = len(Nodes)
         N_list = np.arange(0,N)
@@ -15,18 +16,26 @@ def my_circular_layout(Graph):
         y = [math.sin(j) for j in circ]
         my_circ_layout = {}
         k = 0
-        for nd in Nodes:
-                my_circ_layout[nd] = [x[k],y[k]]
-                k+=1
+        if(ordered == False):
+            size_array=size_array
+            for nd in Nodes:
+                    my_circ_layout[nd] = [x[k],y[k]]
+                    k+=1
                 
-        return my_circ_layout
-
+        else:
+            osize_array = []
+            for srt in Sort:
+                size_array.append(math.log(srt[1]+2)*5)
+                my_circ_layout[srt[0]] = [x[k],y[k]]
+                k += 1
+        return [my_circ_layout,size_array]
 
 def my_level_layout(Graph):
     Nodes = Graph.nodes
     degree_list = []
     label_dict = {}
     my_lvl_layout = {}
+    size_array = []
     for nd in Nodes:
         degree_node = len(Graph[nd])
         if degree_node in degree_list:
@@ -44,13 +53,14 @@ def my_level_layout(Graph):
         k = 0
         for label in label_dict[key]:
             my_lvl_layout[label] = [x_vectors_key[k],y_vectors_key]
+            size_array.append(math.log(key+2)*5)
             k+=1
         
-    return my_lvl_layout
+    return [my_lvl_layout,size_array]
         
         
         
-def my_graph_generator(file, value):
+def my_graph_generator(file, value, ordered):
     G = nx.Graph()
     source = []
     node_indices = []
@@ -67,20 +77,20 @@ def my_graph_generator(file, value):
     size_array = []
     for nd in G.nodes():
         G.node[nd]['degree'] = len(G[nd])
-        G.node[nd]['size'] = int(math.sqrt(G.node[nd]['degree'])*20)
+        G.node[nd]['size'] = int(math.log(G.node[nd]['degree']+2)*5)
         size_array.append(G.node[nd]['size'])
     
     
     
     pos =  []
     if value =='circ':
-        pos = my_circular_layout(G)
+        [pos,size_array] = my_circular_layout(G,ordered,size_array)
     if value =='lvl':
-        pos = my_level_layout(G)
+        [pos,size_array] = my_level_layout(G)
     if value =='oth':
         pos = nx.fruchterman_reingold_layout(G)
     #nx.draw(G,pos = my_circular_layout(G),with_labels=True,nodecolor = 'b',edge_color = 'r',node_size=size_array,node_shape='o')
     return [G,pos,size_array]
 
-def get_graph(value):
-    return my_graph_generator('my_data_set.txt', value)
+def get_graph(value, ordered):
+    return my_graph_generator('trump-net.txt', value, ordered)
